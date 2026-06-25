@@ -1,4 +1,4 @@
-﻿const BASEROW_TOKEN = "SEU_NOVO_TOKEN";
+﻿const BASEROW_TOKEN = "U01tMRa0jHGQO0rUza1iw4IZ15NlJEsz";
 
 const DATABASE = {
     usuarios: 1045685,
