@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gerenciar Despesas</title>
-<link rel="stylesheet" href="../style.css">
 <style>
     *{
         margin:0;
@@ -127,7 +126,7 @@
         <div class="form-grupo">
             <div class="form-campo">
                 <label for="descDespesa">Descrição do Gasto</label>
-                <input type="text" id="descDespesa" placeholder="Ex: Compra de Óleo, Sacolas, Batata crua">
+                <input type="text" id="descDespesa" placeholder="Ex: Compra de Óleo, Sacolas, Batata">
             </div>
             <div class="form-campo" style="max-width: 180px;">
                 <label for="valorDespesa">Valor Pago (R$)</label>
@@ -174,7 +173,8 @@ async function listarDespesas() {
         if (data.results && data.results.length > 0) {
             data.results.forEach(d => {
                 const dataFormatada = d.data ? d.data.substring(0,10).split('-').reverse().join('/') : '---';
-                const itemDescricao = d.descricao || d.produto || 'Gasto Geral';
+                // Aceita coluna como 'descricao' ou 'produto' caso o nome varie no banco
+                const itemDescricao = d.descricao || d.produto || 'Gasto';
                 
                 html += `<tr>
                     <td>${dataFormatada}</td>
@@ -193,13 +193,16 @@ async function listarDespesas() {
 }
 
 async function adicionarDespesa() {
-    const descricao = document.getElementById('descDespesa').value;
-    const valor = document.getElementById('valorDespesa').value;
+    const descricaoInput = document.getElementById('descDespesa').value;
+    const valorInput = document.getElementById('valorDespesa').value;
 
-    if (!descricao || !valor) {
+    if (!descricaoInput || !valorInput) {
         alert("Informe do que se trata o gasto e o respectivo valor.");
         return;
     }
+
+    // Gerando a data atual no formato YYYY-MM-DD exigido pelo campo Date simples do Baserow
+    const dataHoje = new Date().toISOString().split('T')[0];
 
     try {
         const response = await fetch(`${API_URL}/${DATABASE.despesas}/?user_field_names=true`, {
@@ -209,9 +212,9 @@ async function adicionarDespesa() {
                 Authorization: `Token ${BASEROW_TOKEN}`
             },
             body: JSON.stringify({
-                descricao: descricao,
-                valor: Number(valor),
-                data: new Date().toISOString()
+                descricao: descricaoInput,
+                valor: Number(valorInput),
+                data: dataHoje
             })
         });
 
@@ -221,11 +224,13 @@ async function adicionarDespesa() {
             document.getElementById('valorDespesa').value = '';
             listarDespesas();
         } else {
-            alert("Erro ao salvar dados no Baserow.");
+            const errorData = await response.json();
+            console.error("Erro detalhado do Baserow:", errorData);
+            alert("Erro ao salvar dados. Verifique se o nome das colunas na tabela do Baserow são exatamente: 'descricao', 'valor' e 'data'.");
         }
     } catch (err) {
         console.error(err);
-        alert("Erro na conexão.");
+        alert("Erro na conexão física.");
     }
 }
 
