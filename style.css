@@ -34,10 +34,10 @@ body {
 
 /* Ajuste da Imagem da Logo */
 .login-logo {
-    height: 90px;
+    height: 120px;
     width: auto;
     object-fit: contain;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 /* Títulos */
