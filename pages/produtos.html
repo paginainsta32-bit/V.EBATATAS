@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerenciar Produtos</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+    body { font-family: Arial; background: #f5f5f5; margin: 0; }
+    .topo { background: #ff6600; color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; }
+    .menu { background: #222; display: flex; justify-content: center; gap: 10px; padding: 10px; }
+    .menu button { width: auto; padding: 10px 20px; border: none; border-radius: 5px; background: #ff6600; color: white; cursor: pointer; }
+    .container { max-width: 900px; margin: 20px auto; padding: 15px; }
+    .card-cadastro { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,.1); margin-bottom: 25px; }
+    .form-grupo { display: flex; gap: 15px; align-items: flex-end; }
+    .form-grupo div { flex: 1; }
+    input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+    .btn-cadastrar { background: #ff6600; color: white; border: none; padding: 11px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; height: 40px; }
+    .lista-produtos { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,.1); }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th { background: #ff6600; color: white; padding: 12px; text-align: left; }
+    td { padding: 12px; border-bottom: 1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<div class="topo">V.E BATATAS E PRATINHOS</div>
+
+<div class="menu">
+    <button onclick="location.href='dashboard.html'">Dashboard</button>
+    <button onclick="location.href='pedidos.html'">Pedidos</button>
+    <button onclick="location.href='produtos.html'">Produtos</button>
+    <button onclick="location.href='despesas.html'">Despesas</button>
+</div>
+
+<div class="container">
+    <div class="card-cadastro">
+        <h2>Cadastrar Novo Produto</h2>
+        <div class="form-grupo">
+            <div>
+                <label>Nome do Produto</label>
+                <input type="text" id="nomeProduto" placeholder="Ex: Batata com Bacon G">
+            </div>
+            <div style="max-width: 200px;">
+                <label>Preço de Venda (R$)</label>
+                <input type="number" id="valorProduto" step="0.01" placeholder="Ex: 18.00">
+            </div>
+            <button class="btn-cadastrar" onclick="adicionarProduto()">Cadastrar</button>
+        </div>
+    </div>
+
+    <div class="lista-produtos">
+        <h2>Cardápio / Produtos Atuais</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Valor Unitário</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaProdutos">
+                <tr><td colspan="2">Carregando listagem...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="../config.js"></script>
+<script>
+function formatoMoeda(v) {
+    return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+async function listarProdutos() {
+    try {
+        const response = await fetch(`${API_URL}/${DATABASE.produtos}/?user_field_names=true`, {
+            headers: { Authorization: `Token ${BASEROW_TOKEN}` }
+        });
+        const data = await response.json();
+        let html = '';
+        
+        if (data.results && data.results.length > 0) {
+            data.results.forEach(p => {
+                html += `<tr>
+                    <td><b>${p.produto || 'Sem nome'}</b></td>
+                    <td style="color: green; font-weight: bold;">${formatoMoeda(p.valor || 0)}</td>
+                </tr>`;
+            });
+        } else {
+            html = `<tr><td colspan="2">Nenhum produto cadastrado ainda.</td></tr>`;
+        }
+        document.getElementById('tabelaProdutos').innerHTML = html;
+    } catch (err) {
+        console.error(err);
+        document.getElementById('tabelaProdutos').innerHTML = `<tr><td colspan="2">Erro ao carregar do banco.</td></tr>`;
+    }
+}
+
+async function adicionarProduto() {
+    const nome = document.getElementById('nomeProduto').value;
+    const valor = document.getElementById('valorProduto').value;
+
+    if (!nome || !valor) {
+        alert("Por favor, preencha o nome e o valor do item.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/${DATABASE.produtos}/?user_field_names=true`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Token ${BASEROW_TOKEN}`
+            },
+            body: JSON.stringify({
+                produto: nome,
+                valor: Number(valor)
+            })
+        });
+
+        if (response.ok) {
+            alert("Produto inserido no cardápio!");
+            document.getElementById('nomeProduto').value = '';
+            document.getElementById('valorProduto').value = '';
+            listarProdutos();
+        } else {
+            alert("Erro ao salvar produto no Baserow.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Erro de comunicação.");
+    }
+}
+
+// Inicializa a tabela assim que abre a página
+listarProdutos();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerenciar Produtos</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+    body { font-family: Arial; background: #f5f5f5; margin: 0; }
+    .topo { background: #ff6600; color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; }
+    .menu { background: #222; display: flex; justify-content: center; gap: 10px; padding: 10px; }
+    .menu button { width: auto; padding: 10px 20px; border: none; border-radius: 5px; background: #ff6600; color: white; cursor: pointer; }
+    .container { max-width: 900px; margin: 20px auto; padding: 15px; }
+    .card-cadastro { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,.1); margin-bottom: 25px; }
+    .form-grupo { display: flex; gap: 15px; align-items: flex-end; }
+    .form-grupo div { flex: 1; }
+    input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+    .btn-cadastrar { background: #ff6600; color: white; border: none; padding: 11px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; height: 40px; }
+    .lista-produtos { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,.1); }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th { background: #ff6600; color: white; padding: 12px; text-align: left; }
+    td { padding: 12px; border-bottom: 1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<div class="topo">V.E BATATAS E PRATINHOS</div>
+
+<div class="menu">
+    <button onclick="location.href='dashboard.html'">Dashboard</button>
+    <button onclick="location.href='pedidos.html'">Pedidos</button>
+    <button onclick="location.href='produtos.html'">Produtos</button>
+    <button onclick="location.href='despesas.html'">Despesas</button>
+</div>
+
+<div class="container">
+    <div class="card-cadastro">
+        <h2>Cadastrar Novo Produto</h2>
+        <div class="form-grupo">
+            <div>
+                <label>Nome do Produto</label>
+                <input type="text" id="nomeProduto" placeholder="Ex: Batata com Bacon G">
+            </div>
+            <div style="max-width: 200px;">
+                <label>Preço de Venda (R$)</label>
+                <input type="number" id="valorProduto" step="0.01" placeholder="Ex: 18.00">
+            </div>
+            <button class="btn-cadastrar" onclick="adicionarProduto()">Cadastrar</button>
+        </div>
+    </div>
+
+    <div class="lista-produtos">
+        <h2>Cardápio / Produtos Atuais</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Valor Unitário</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaProdutos">
+                <tr><td colspan="2">Carregando listagem...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="../config.js"></script>
+<script>
+function formatoMoeda(v) {
+    return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+async function listarProdutos() {
+    try {
+        const response = await fetch(`${API_URL}/${DATABASE.produtos}/?user_field_names=true`, {
+            headers: { Authorization: `Token ${BASEROW_TOKEN}` }
+        });
+        const data = await response.json();
+        let html = '';
+        
+        if (data.results && data.results.length > 0) {
+            data.results.forEach(p => {
+                html += `<tr>
+                    <td><b>${p.produto || 'Sem nome'}</b></td>
+                    <td style="color: green; font-weight: bold;">${formatoMoeda(p.valor || 0)}</td>
+                </tr>`;
+            });
+        } else {
+            html = `<tr><td colspan="2">Nenhum produto cadastrado ainda.</td></tr>`;
+        }
+        document.getElementById('tabelaProdutos').innerHTML = html;
+    } catch (err) {
+        console.error(err);
+        document.getElementById('tabelaProdutos').innerHTML = `<tr><td colspan="2">Erro ao carregar do banco.</td></tr>`;
+    }
+}
+
+async function adicionarProduto() {
+    const nome = document.getElementById('nomeProduto').value;
+    const valor = document.getElementById('valorProduto').value;
+
+    if (!nome || !valor) {
+        alert("Por favor, preencha o nome e o valor do item.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/${DATABASE.produtos}/?user_field_names=true`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Token ${BASEROW_TOKEN}`
+            },
+            body: JSON.stringify({
+                produto: nome,
+                valor: Number(valor)
+            })
+        });
+
+        if (response.ok) {
+            alert("Produto inserido no cardápio!");
+            document.getElementById('nomeProduto').value = '';
+            document.getElementById('valorProduto').value = '';
+            listarProdutos();
+        } else {
+            alert("Erro ao salvar produto no Baserow.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Erro de comunicação.");
+    }
+}
+
+// Inicializa a tabela assim que abre a página
+listarProdutos();
+</script>
+</body>
+</html>
