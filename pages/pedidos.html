@@ -1,0 +1,374 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Novo Pedido</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+    margin:0;
+}
+
+.topo{
+    background:#ff6600;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+}
+
+button{
+    padding:10px 15px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.produto{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+    border-bottom:1px solid #ddd;
+    padding:10px;
+}
+
+.total{
+    font-size:30px;
+    font-weight:bold;
+    color:green;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+NOVO PEDIDO
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Cliente</h2>
+
+<input
+type="text"
+id="cliente"
+placeholder="Nome do Cliente">
+
+</div>
+
+<div class="card">
+
+<h2>Produtos</h2>
+
+<div id="listaProdutos">
+
+Carregando...
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Resumo</h2>
+
+<div id="resumo"></div>
+
+<br>
+
+<div class="total" id="valorTotal">
+
+R$ 0,00
+
+</div>
+
+<br>
+
+<button onclick="salvarPedido()">
+
+Finalizar Pedido
+
+</button>
+
+</div>
+
+</div>
+
+<script src="../config.js"></script>
+
+<script>
+
+let produtos=[];
+let carrinho=[];
+
+function moeda(v){
+
+return v.toLocaleString(
+'pt-BR',
+{
+style:'currency',
+currency:'BRL'
+}
+);
+
+}
+
+async function carregarProdutos(){
+
+const response=await fetch(
+`${API_URL}/${DATABASE.produtos}/?user_field_names=true`,
+{
+headers:{
+Authorization:`Token ${BASEROW_TOKEN}`
+}
+}
+);
+
+const data=await response.json();
+
+produtos=data.results;
+
+let html='';
+
+produtos.forEach(produto=>{
+
+html+=`
+
+<div class="produto">
+
+<div>
+
+<b>${produto.produto}</b>
+
+<br>
+
+${moeda(Number(produto.valor))}
+
+</div>
+
+<div>
+
+<input
+type="number"
+min="0"
+value="0"
+style="width:80px"
+onchange="atualizarCarrinho(${produto.id},this.value)">
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+'listaProdutos'
+).innerHTML=html;
+
+}
+
+function atualizarCarrinho(id,qtd){
+
+qtd=Number(qtd);
+
+const produto=
+produtos.find(p=>p.id===id);
+
+const existente=
+carrinho.find(c=>c.id===id);
+
+if(qtd<=0){
+
+carrinho=
+carrinho.filter(c=>c.id!==id);
+
+}else{
+
+if(existente){
+
+existente.qtd=qtd;
+
+}else{
+
+carrinho.push({
+
+id:id,
+nome:produto.produto,
+valor:Number(produto.valor),
+qtd:qtd
+
+});
+
+}
+
+}
+
+renderizarResumo();
+
+}
+
+function renderizarResumo(){
+
+let total=0;
+
+let html='';
+
+carrinho.forEach(item=>{
+
+const subtotal=
+item.valor*item.qtd;
+
+total+=subtotal;
+
+html+=`
+
+<p>
+
+${item.qtd}x ${item.nome}
+
+= ${moeda(subtotal)}
+
+</p>
+
+`;
+
+});
+
+document.getElementById(
+'resumo'
+).innerHTML=html;
+
+document.getElementById(
+'valorTotal'
+).innerHTML=
+moeda(total);
+
+}
+
+async function salvarPedido(){
+
+const cliente=
+document.getElementById(
+'cliente'
+).value;
+
+if(cliente===''){
+
+alert('Informe o cliente');
+
+return;
+
+}
+
+if(carrinho.length===0){
+
+alert('Adicione produtos');
+
+return;
+
+}
+
+let total=0;
+
+carrinho.forEach(item=>{
+
+total+=
+item.valor*item.qtd;
+
+});
+
+const pedidoResp=
+await fetch(
+`${API_URL}/${DATABASE.pedidos}/?user_field_names=true`,
+{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+Authorization:`Token ${BASEROW_TOKEN}`
+},
+body:JSON.stringify({
+
+cliente:cliente,
+total:total,
+status:'Aguardando',
+pagamento:'',
+data:new Date().toISOString()
+
+})
+}
+);
+
+const pedido=
+await pedidoResp.json();
+
+for(const item of carrinho){
+
+await fetch(
+`${API_URL}/${DATABASE.itensPedido}/?user_field_names=true`,
+{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+Authorization:`Token ${BASEROW_TOKEN}`
+},
+body:JSON.stringify({
+
+pedido_id:pedido.id,
+produto:item.nome,
+quantidade:item.qtd,
+valor_unitario:item.valor,
+subtotal:item.valor*item.qtd
+
+})
+}
+);
+
+}
+
+localStorage.setItem(
+'pedidoAtual',
+pedido.id
+);
+
+window.location=
+'pagamento.html';
+
+}
+
+carregarProdutos();
+
+</script>
+
+</body>
+</html>
