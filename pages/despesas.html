@@ -5,111 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gerenciar Despesas</title>
 <style>
-    *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-        font-family:Arial,sans-serif;
-    }
-    body{
-        background:#f5f5f5;
-    }
-    .topo{
-        background:#ff6600;
-        color:white;
-        padding:15px;
-        text-align:center;
-        font-size:24px;
-        font-weight:bold;
-    }
-    .menu{
-        background:#222;
-        display:flex;
-        justify-content:center;
-        gap:10px;
-        padding:10px;
-    }
-    .menu button{
-        width:auto;
-        padding:10px 20px;
-        border:none;
-        border-radius:5px;
-        background:#ff6600;
-        color:white;
-        cursor:pointer;
-    }
-    .container{
-        max-width:900px;
-        margin:20px auto;
-        padding:15px;
-    }
-    .card{
-        background:white;
-        padding:20px;
-        border-radius:10px;
-        box-shadow:0 0 10px rgba(0,0,0,.1);
-        margin-bottom:20px;
-    }
-    .card h2{
-        margin-bottom: 15px;
-        font-size: 20px;
-        color: #333;
-    }
-    .form-grupo {
-        display: flex;
-        gap: 15px;
-        align-items: flex-end;
-        flex-wrap: wrap;
-    }
-    .form-campo {
-        flex: 1;
-        min-width: 200px;
-    }
-    .form-campo label {
-        font-size: 13px;
-        color: #666;
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-    }
-    input{
-        width:100%;
-        padding:10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-sizing:border-box;
-    }
-    .btn-gasto{
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        height: 38px;
-    }
-    table{
-        width:100%;
-        border-collapse:collapse;
-        margin-top: 10px;
-    }
-    th{
-        background:#e74c3c;
-        color:white;
-        padding:12px;
-        text-align: left;
-    }
-    td{
-        padding:12px;
-        border-bottom:1px solid #ddd;
-    }
+    *{ margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+    body{ background:#f5f5f5; }
+    .topo{ background:#ff6600; color:white; padding:15px; text-align:center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    .topo img { height: 60px; width: auto; }
+    .topo h1 { font-size: 24px; font-weight: bold; }
+    .menu{ background:#222; display:flex; justify-content:center; gap:10px; padding:10px; flex-wrap: wrap; }
+    .menu button{ width:auto; padding:10px 20px; border:none; border-radius:5px; background:#ff6600; color:white; cursor:pointer; font-weight: bold; }
+    .menu .btn-sair { background: #e74c3c; }
+    .container{ max-width:900px; margin:20px auto; padding:15px; }
+    .card{ background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,.1); margin-bottom:20px; }
+    .card h2{ margin-bottom: 15px; font-size: 20px; color: #333; }
+    .form-grupo { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+    .form-campo { flex: 1; min-width: 200px; }
+    .form-campo label { font-size: 13px; color: #666; font-weight: bold; display: block; margin-bottom: 5px; }
+    input{ width:100%; padding:10px; border: 1px solid #ddd; border-radius: 5px; box-sizing:border-box; }
+    .btn-gasto{ background: #e74c3c; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; height: 38px; }
+    table{ width:100%; border-collapse:collapse; margin-top: 10px; }
+    th{ background:#e74c3c; color:white; padding:12px; text-align: left; }
+    td{ padding:12px; border-bottom:1px solid #ddd; }
 </style>
 </head>
 <body>
 
 <div class="topo">
-    V.E BATATAS E PRATINHOS
+    <img src="../assets/logo.png" alt="Logo">
+    <h1>V.E BATATAS E PRATINHOS</h1>
 </div>
 
 <div class="menu">
@@ -117,19 +38,19 @@
     <button onclick="location.href='pedidos.html'">Pedidos</button>
     <button onclick="location.href='produtos.html'">Produtos</button>
     <button onclick="location.href='despesas.html'">Despesas</button>
+    <button class="btn-sair" onclick="localStorage.clear(); window.location='../index.html'">Sair</button>
 </div>
 
 <div class="container">
-
     <div class="card">
         <h2 style="color: #e74c3c;">Lançar Novo Gasto / Despesa</h2>
         <div class="form-grupo">
             <div class="form-campo">
-                <label for="descDespesa">Descrição do Gasto</label>
-                <input type="text" id="descDespesa" placeholder="Ex: Compra de Óleo, Sacolas, Batata">
+                <label>Descrição do Gasto</label>
+                <input type="text" id="descDespesa" placeholder="Ex: Óleo, Embalagens">
             </div>
             <div class="form-campo" style="max-width: 180px;">
-                <label for="valorDespesa">Valor Pago (R$)</label>
+                <label>Valor Pago (R$)</label>
                 <input type="number" id="valorDespesa" step="0.01" placeholder="0,00">
             </div>
             <button class="btn-gasto" onclick="adicionarDespesa()">Registrar Saída</button>
@@ -147,13 +68,10 @@
                 </tr>
             </thead>
             <tbody id="tabelaDespesas">
-                <tr>
-                    <td colspan="3">Carregando despesas...</td>
-                </tr>
+                <tr><td colspan="3">Carregando despesas...</td></tr>
             </tbody>
         </table>
     </div>
-
 </div>
 
 <script src="../config.js"></script>
@@ -173,9 +91,7 @@ async function listarDespesas() {
         if (data.results && data.results.length > 0) {
             data.results.forEach(d => {
                 const dataFormatada = d.data ? d.data.substring(0,10).split('-').reverse().join('/') : '---';
-                // Aceita coluna como 'descricao' ou 'produto' caso o nome varie no banco
                 const itemDescricao = d.descricao || d.produto || 'Gasto';
-                
                 html += `<tr>
                     <td>${dataFormatada}</td>
                     <td><b>${itemDescricao}</b></td>
@@ -183,55 +99,35 @@ async function listarDespesas() {
                 </tr>`;
             });
         } else {
-            html = `<tr><td colspan="3">Nenhuma despesa registrada neste período.</td></tr>`;
+            html = `<tr><td colspan="3">Nenhuma despesa registrada.</td></tr>`;
         }
         document.getElementById('tabelaDespesas').innerHTML = html;
-    } catch (err) {
-        console.error(err);
-        document.getElementById('tabelaDespesas').innerHTML = `<tr><td colspan="3">Erro ao conectar com o banco.</td></tr>`;
-    }
+    } catch (err) { console.error(err); }
 }
 
 async function adicionarDespesa() {
-    const descricaoInput = document.getElementById('descDespesa').value;
-    const valorInput = document.getElementById('valorDespesa').value;
+    const descricao = document.getElementById('descDespesa').value;
+    const valor = document.getElementById('valorDespesa').value;
 
-    if (!descricaoInput || !valorInput) {
-        alert("Informe do que se trata o gasto e o respectivo valor.");
-        return;
-    }
-
-    // Gerando a data atual no formato YYYY-MM-DD exigido pelo campo Date simples do Baserow
+    if (!descricao || !valor) { alert("Informe a descrição e o valor."); return; }
     const dataHoje = new Date().toISOString().split('T')[0];
 
     try {
         const response = await fetch(`${API_URL}/${DATABASE.despesas}/?user_field_names=true`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Token ${BASEROW_TOKEN}`
-            },
-            body: JSON.stringify({
-                descricao: descricaoInput,
-                valor: Number(valorInput),
-                data: dataHoje
-            })
+            headers: { 'Content-Type': 'application/json', Authorization: `Token ${BASEROW_TOKEN}` },
+            body: JSON.stringify({ descricao: descricao, valor: Number(valor), data: dataHoje })
         });
 
         if (response.ok) {
-            alert("Despesa salva com sucesso!");
+            alert("Despesa salva!");
             document.getElementById('descDespesa').value = '';
             document.getElementById('valorDespesa').value = '';
             listarDespesas();
         } else {
-            const errorData = await response.json();
-            console.error("Erro detalhado do Baserow:", errorData);
-            alert("Erro ao salvar dados. Verifique se o nome das colunas na tabela do Baserow são exatamente: 'descricao', 'valor' e 'data'.");
+            alert("Erro do banco. Verifique se as colunas no Baserow são exatamente: 'descricao', 'valor' e 'data'.");
         }
-    } catch (err) {
-        console.error(err);
-        alert("Erro na conexão física.");
-    }
+    } catch (err) { console.error(err); }
 }
 
 listarDespesas();
