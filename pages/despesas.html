@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -6,25 +6,112 @@
 <title>Gerenciar Despesas</title>
 <link rel="stylesheet" href="../style.css">
 <style>
-    body { font-family: Arial; background: #f5f5f5; margin: 0; }
-    .topo { background: #ff6600; color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; }
-    .menu { background: #222; display: flex; justify-content: center; gap: 10px; padding: 10px; }
-    .menu button { width: auto; padding: 10px 20px; border: none; border-radius: 5px; background: #ff6600; color: white; cursor: pointer; }
-    .container { max-width: 900px; margin: 20px auto; padding: 15px; }
-    .card-cadastro { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,.1); margin-bottom: 25px; }
-    .form-grupo { display: flex; gap: 15px; align-items: flex-end; }
-    .form-grupo div { flex: 1; }
-    input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-    .btn-gasto { background: #e74c3c; color: white; border: none; padding: 11px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; height: 40px; }
-    .lista-despesas { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,.1); }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th { background: #e74c3c; color: white; padding: 12px; text-align: left; }
-    td { padding: 12px; border-bottom: 1px solid #ddd; }
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial,sans-serif;
+    }
+    body{
+        background:#f5f5f5;
+    }
+    .topo{
+        background:#ff6600;
+        color:white;
+        padding:15px;
+        text-align:center;
+        font-size:24px;
+        font-weight:bold;
+    }
+    .menu{
+        background:#222;
+        display:flex;
+        justify-content:center;
+        gap:10px;
+        padding:10px;
+    }
+    .menu button{
+        width:auto;
+        padding:10px 20px;
+        border:none;
+        border-radius:5px;
+        background:#ff6600;
+        color:white;
+        cursor:pointer;
+    }
+    .container{
+        max-width:900px;
+        margin:20px auto;
+        padding:15px;
+    }
+    .card{
+        background:white;
+        padding:20px;
+        border-radius:10px;
+        box-shadow:0 0 10px rgba(0,0,0,.1);
+        margin-bottom:20px;
+    }
+    .card h2{
+        margin-bottom: 15px;
+        font-size: 20px;
+        color: #333;
+    }
+    .form-grupo {
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    .form-campo {
+        flex: 1;
+        min-width: 200px;
+    }
+    .form-campo label {
+        font-size: 13px;
+        color: #666;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+    input{
+        width:100%;
+        padding:10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing:border-box;
+    }
+    .btn-gasto{
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        height: 38px;
+    }
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top: 10px;
+    }
+    th{
+        background:#e74c3c;
+        color:white;
+        padding:12px;
+        text-align: left;
+    }
+    td{
+        padding:12px;
+        border-bottom:1px solid #ddd;
+    }
 </style>
 </head>
 <body>
 
-<div class="topo">V.E BATATAS E PRATINHOS</div>
+<div class="topo">
+    V.E BATATAS E PRATINHOS
+</div>
 
 <div class="menu">
     <button onclick="location.href='dashboard.html'">Dashboard</button>
@@ -34,22 +121,23 @@
 </div>
 
 <div class="container">
-    <div class="card-cadastro">
+
+    <div class="card">
         <h2 style="color: #e74c3c;">Lançar Novo Gasto / Despesa</h2>
         <div class="form-grupo">
-            <div>
-                <label>Descrição do Gasto</label>
-                <input type="text" id="descDespesa" placeholder="Ex: Óleo de fritura, Sacolas, Energia">
+            <div class="form-campo">
+                <label for="descDespesa">Descrição do Gasto</label>
+                <input type="text" id="descDespesa" placeholder="Ex: Compra de Óleo, Sacolas, Batata crua">
             </div>
-            <div style="max-width: 200px;">
-                <label>Valor Pago (R$)</label>
-                <input type="number" id="valorDespesa" step="0.01" placeholder="Ex: 54.90">
+            <div class="form-campo" style="max-width: 180px;">
+                <label for="valorDespesa">Valor Pago (R$)</label>
+                <input type="number" id="valorDespesa" step="0.01" placeholder="0,00">
             </div>
             <button class="btn-gasto" onclick="adicionarDespesa()">Registrar Saída</button>
         </div>
     </div>
 
-    <div class="lista-despesas">
+    <div class="card">
         <h2>Histórico de Despesas</h2>
         <table>
             <thead>
@@ -60,10 +148,13 @@
                 </tr>
             </thead>
             <tbody id="tabelaDespesas">
-                <tr><td colspan="3">Carregando despesas...</td></tr>
+                <tr>
+                    <td colspan="3">Carregando despesas...</td>
+                </tr>
             </tbody>
         </table>
     </div>
+
 </div>
 
 <script src="../config.js"></script>
@@ -82,9 +173,7 @@ async function listarDespesas() {
         
         if (data.results && data.results.length > 0) {
             data.results.forEach(d => {
-                // Formata a data ISO para o padrão brasileiro DD/MM/AAAA
                 const dataFormatada = d.data ? d.data.substring(0,10).split('-').reverse().join('/') : '---';
-                // Aceita coluna como 'descricao' ou 'produto' (caso use uma tabela genérica)
                 const itemDescricao = d.descricao || d.produto || 'Gasto Geral';
                 
                 html += `<tr>
@@ -122,7 +211,7 @@ async function adicionarDespesa() {
             body: JSON.stringify({
                 descricao: descricao,
                 valor: Number(valor),
-                data: new Date().toISOString() // Salva o exato momento da operação
+                data: new Date().toISOString()
             })
         });
 
@@ -136,11 +225,10 @@ async function adicionarDespesa() {
         }
     } catch (err) {
         console.error(err);
-        alert("Erro na conexão física com a API.");
+        alert("Erro na conexão.");
     }
 }
 
-// Inicializa a tabela assim que abre a página
 listarDespesas();
 </script>
 </body>
