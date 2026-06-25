@@ -1,0 +1,28 @@
+﻿body{
+    margin:0;
+    background:#f5f5f5;
+    font-family:Arial;
+}
+
+.login-box{
+    width:350px;
+    margin:120px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    cursor:pointer;
+}
