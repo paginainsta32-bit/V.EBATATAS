@@ -1,35 +1,43 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V.E BATATAS E PRATINHOS</title>
-
+<title>V.E BATATAS E PRATINHOS - Login</title>
 <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
 
-<div class="login-box">
+<div class="login-wrapper">
+    <div class="login-box">
+        <!-- Sua Logo adicionada aqui no topo do card -->
+        <img src="assets/logo.png" alt="Logo V.E Batatas" class="login-logo">
+        
+        <h1>V.E BATATAS E PRATINHOS</h1>
+        <p class="login-sub">Painel Administrativo</p>
 
-    <h1>V.E BATATAS E PRATINHOS</h1>
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="usuario" 
+                placeholder="Usuário"
+                required
+            >
+        </div>
 
-    <input
-        type="text"
-        id="usuario"
-        placeholder="Usuário"
-    >
+        <div class="input-container">
+            <input 
+                type="password" 
+                id="senha" 
+                placeholder="Senha"
+                required
+            >
+        </div>
 
-    <input
-        type="password"
-        id="senha"
-        placeholder="Senha"
-    >
-
-    <button onclick="login()">
-        Entrar
-    </button>
-
+        <button onclick="login()">
+            Entrar no Sistema
+        </button>
+    </div>
 </div>
 
 <script src="config.js"></script>
